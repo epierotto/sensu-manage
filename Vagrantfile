@@ -1,88 +1,90 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.require_version ">= 1.5.0"
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  # All Vagrant configuration is done here. The most common configuration
-  # options are documented and commented below. For a complete reference,
-  # please see the online documentation at vagrantup.com.
-
-  config.vm.hostname = "sensu-manage-berkshelf"
-
+Vagrant.configure('2') do |config|
   # Set the version of chef to install using the vagrant-omnibus plugin
   config.omnibus.chef_version = :latest
-
-  # Every Vagrant virtual environment requires a box to build off of.
-  # If this value is a shorthand to a box in Vagrant Cloud then 
-  # config.vm.box_url doesn't need to be specified.
-  config.vm.box = "chef/ubuntu-14.04"
-
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # is not a Vagrant Cloud box and if it doesn't already exist on the 
-  # user's system.
-  # config.vm.box_url = "https://vagrantcloud.com/chef/ubuntu-14.04/version/1/provider/virtualbox.box"
-
-  # Assign this VM to a host-only network IP, allowing you to access it
-  # via the IP. Host-only networks can talk to the host machine as well as
-  # any other machines on the same network, but cannot be accessed (through this
-  # network interface) by any external networks.
-  config.vm.network :private_network, type: "dhcp"
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
-
-  # The path to the Berksfile to use with Vagrant Berkshelf
-  # config.berkshelf.berksfile_path = "./Berksfile"
 
   # Enabling the Berkshelf plugin. To enable this globally, add this configuration
   # option to your ~/.vagrant.d/Vagrantfile file
   config.berkshelf.enabled = true
 
-  # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to exclusively install and copy to Vagrant's shelf.
-  # config.berkshelf.only = []
+  config.berkshelf.berksfile_path = "Berksfile"
 
-  # An array of symbols representing groups of cookbook described in the Vagrantfile
-  # to skip installing and copying to Vagrant's shelf.
-  # config.berkshelf.except = []
 
-  config.vm.provision :chef_solo do |chef|
-    chef.json = {
-      mysql: {
-        server_root_password: 'rootpass',
-        server_debian_password: 'debpass',
-        server_repl_password: 'replpass'
+  #### Docker1 definition 
+  config.vm.define :client do |client|
+    client.vm.box = 'opscode-centos-6.6'
+    client.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.6_chef-provisionerless.box"
+    client.vm.network :private_network, ip: '10.0.0.15'
+    client.vm.hostname = 'client'
+    config.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id,
+                        '--cpus', '1',
+                        '--memory', '512',]
+        end
+    client.vm.provision :chef_solo do |chef|
+      chef.data_bags_path = "test/data_bags"
+      chef.log_level = :info #:debug
+      chef.json = {
+        "consul" => {
+#          "serve_ui" => true,
+          "version" => "0.4.1",
+#          "bootstrap_expect" => 2,
+          "retry_on_join" => true,
+          "bind_interface" => "eth1",
+          "advertise_addr" => "10.0.0.15",
+          "service_mode" => "client",
+          "servers" => ["10.0.0.10","10.0.0.11","10.0.0.12"]
+        },
+        "sensu" => {
+#          "serve_ui" => true,
+#          "version" => "0.4.1",
+#          "bootstrap_expect" => 1,
+#          "retry_on_join" => true,
+#          "bind_interface" => "eth1",
+#          "advertise_addr" => "10.0.0.10",
+          "rabbitmq" => {
+		"host" => "rabbitmq.service.consul",
+		"port" => "5671",
+		
+	  },
+          "redis" => {
+		"host" => "redis.service.consul",
+		"port" => "6379"		
+	  },
+          "servers" => ["10.0.0.10","10.0.0.11","10.0.0.12"]
+        },
+        "consul-manage" => {
+          "service" => {
+            "names" => [],
+            "data_bag" => ""
+          },
+	"watch" => {
+            "service" => {
+                        "names" => [],
+                        "data_bag" => ""
+                }
+          },
+          "handlers" => {
+                "packages" => ["nc"],
+                "sources" => [],
+                "dir" => "/usr/local/consul/handlers/"
+          }
+        }
       }
-    }
-
-    chef.run_list = [
-        "recipe[sensu-manage::default]"
-    ]
+      chef.run_list = [
+        "recipe[yum-epel]",
+        "recipe[consul]",
+        "recipe[consul-manage::dns]",
+        "recipe[consul-manage::handlers]",
+	"recipe[sensu::default]",
+	"recipe[sensu::client_service]"
+#        "recipe[consul-manage::_define]",
+#        "recipe[consul-manage::_watch]",
+#        "recipe[docker-manage::_build]",
+#        "recipe[docker-manage::_run]"
+        ]
+    end
   end
 end
