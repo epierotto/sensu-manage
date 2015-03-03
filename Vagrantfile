@@ -78,8 +78,9 @@ Vagrant.configure('2') do |config|
         "recipe[consul]",
         "recipe[consul-manage::dns]",
         "recipe[consul-manage::handlers]",
-	"recipe[sensu::default]",
-	"recipe[sensu::client_service]"
+        "recipe[sensu-manage::_linux_install]",
+	"recipe[sensu::default]"
+#	"recipe[sensu::client_service]"
 #        "recipe[consul-manage::_define]",
 #        "recipe[consul-manage::_watch]",
 #        "recipe[docker-manage::_build]",
