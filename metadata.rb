@@ -11,4 +11,3 @@ supports 'centos'
 supports 'ubuntu'
 supports 'windows'
 
-depends 'sensu', '<= 2.6.0'

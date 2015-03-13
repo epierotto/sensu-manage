@@ -1,19 +1,19 @@
 {
   "rabbitmq": {
     "ssl": {
-      "cert_chain_file": "<%= node.sensu.log_directory %>",
-      "private_key_file": "<%= node.sensu.log_directory %>"
+      "cert_chain_file": "<%= @ssl_cert_chain_file %>",
+      "private_key_file": "<%= @ssl_private_key_file %>"
     },
-    "host": "<%= node.sensu.log_directory %>",
-    "port": <%= node.sensu.log_directory %>,
-    "vhost": "<%= node.sensu.log_directory %>",
-    "user": "<%= node.sensu.log_directory %>",
-    "password": "<%= node.sensu.log_directory %>"
+    "host": "<%= node['sensu-manage']['rabbitmq']['host'] %>",
+    "port": <%= node['sensu-manage']['rabbitmq']['port'] %>,
+    "vhost": "<%= node['sensu-manage']['rabbitmq']['vhost'] %>",
+    "user": "<%= node['sensu-manage']['rabbitmq']['user'] %>",
+    "password": "<%= node['sensu-manage']['rabbitmq']['password'] %>"
   },
   
   "client": {
     "name": "<%= node[:fqdn] %>",
     "address": "<%= node[:ipaddress] %>",
-    "subscriptions": [<%= node.sensu.log_directory %>]
+    "subscriptions": <%= @subscriptions %>
   }
 }

@@ -1,6 +1,0 @@
-{
-  "id": "config",
-  "rabbitmq": {
-    "permissions": "^foo-.* .* .*"
-  }
-}

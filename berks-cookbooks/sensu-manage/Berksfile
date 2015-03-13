@@ -1,5 +1,0 @@
-source "https://supermarket.getchef.com"
-
-cookbook 'sensu', '~> 2.6.0', git: 'https://github.com/sensu/sensu-chef.git'
-
-metadata

@@ -1,0 +1,17 @@
+{
+  "id": "check-consul_service",
+  "checks": {
+    "check-consul_service": {
+      "command": "nc -zv 10.0.0.10 3000",
+      "interval": 60,
+      "standalone": true,
+      "handlers": [
+	"default" 
+	]
+    }
+  },
+  "plugins": {
+    "packages": ["nc"],
+    "sources": ["https://dl.bintray.com/mitchellh/consul/0.5.0_linux_amd64.zip","https://dl.bintray.com/mitchellh/consul/0.5.0_windows_386.zip"]
+  }
+}

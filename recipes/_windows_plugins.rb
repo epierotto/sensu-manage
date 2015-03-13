@@ -1,6 +1,5 @@
-#
 # Cookbook Name:: sensu-manage
-# Recipe:: _linux_plugins
+# Recipe:: _windows_plugins
 #
 # Copyright (C) 2015 Exequiel Pierotto
 #
@@ -9,15 +8,12 @@
 
 # Create a directory to store the scripts
 
-admin_user = "#{node['sensu-manage']['linux']['admin_user']}"
-sensu_user = "#{node['sensu-manage']['linux']['user']}"
-sensu_group = "#{node['sensu-manage']['linux']['group']}"
-plugins_dir = "#{node['sensu-manage']['linux']['plugins']['dir']}"
+admin_user = "#{node['sensu-manage']['windows']['admin_user']}"
+plugins_dir = "#{node['sensu-manage']['windows']['plugins']['dir']}"
 
 directory plugins_dir do
-  owner admin_user
-  group sensu_group
-  mode '0755'
+  rights :read, admin_user
+  rights :full_control, admin_user
   action :create
   recursive true
   not_if { Dir.exist? ("#{plugins_dir}") }
@@ -36,14 +32,14 @@ data_bags.keys.each do |data_bag|
     if bag.key?('plugins')
       plugins = bag['plugins']
       # Install the needed packages if any
-      unless plugins['packages'].empty?
-        packages = plugins['packages']
-        packages.each do |package|
-          package package do
-            action :install
-          end
-        end
-      end
+#      unless plugins['packages'].empty?
+#        packages = plugins['packages']
+#        packages.each do |package|
+#          package package do
+#            action :install
+#          end
+#        end
+#      end
 
       # Copy the scripts into the plugins directory
       unless plugins['sources'].empty?
@@ -54,7 +50,8 @@ data_bags.keys.each do |data_bag|
           remote_file "#{plugins_dir}/#{plugin_script}" do
             action :create
             source source
-            mode "0755"
+            rights :read, admin_user
+            rights :full_control, admin_user
             backup false
           end
         end

@@ -1,0 +1,36 @@
+{
+  "checks": {
+<% @check.each do |key, value| -%>
+  <% unless value.empty? -%>
+    <%= key %>: {
+	<%= value %>
+    
+  <% end %>
+<% end %>
+    "chef_client": 
+      "command": "check-chef-client.rb",
+      "subscribers": [
+        "production"
+      ],
+      "handle": false,
+      "standalone": true,
+      "interval": 60,
+      "handlers": [
+        "pagerduty",
+        "irc"
+      ],
+      "dependencies": [
+         "ldap.example.com/ldap",
+         "ssh-service"
+      ],
+      "occurrences": 2,
+      "refresh": 1800,
+      "low_flap_threshold": 5,
+      "high_flap_threshold": 25,
+      "subdue": {
+        "begin": "5PM PST",
+        "end": "9AM PST"
+      }
+    }
+  }
+}
