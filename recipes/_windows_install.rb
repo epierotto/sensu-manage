@@ -23,7 +23,16 @@ windows_package "#{package}" do
   source "#{Chef::Config[:file_cache_path]}/#{package}"
 end
 
+# Service Config
+admin_user = "#{node['sensu-manage']['windows']['admin_user']}"
 
 service 'sensu-client' do
   action :enable
 end
+
+
+#windows_service 'sensu-client' do
+#  run_as_user admin_user
+#  action :configure_startup
+#  startup_type :automatic
+#end
