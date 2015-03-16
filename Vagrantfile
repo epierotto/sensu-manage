@@ -86,11 +86,6 @@ Vagrant.configure('2') do |config|
 					"interval" => 10,
 					"type" => "metric"
 				 }
-#			       "check-consul_service" => {
-#					"command" => "nc -zv 10.0.0.10 4000",
-#					"interval" => 10,
-#					"type" => "metric"
-#				 }
 			}
 		}
 	  }
