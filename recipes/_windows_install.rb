@@ -17,10 +17,12 @@ remote_file "#{Chef::Config[:file_cache_path]}/#{package}" do
   checksum checksum
 end
 
-package "#{package}" do
+
+windows_package "#{package}" do
   action :install
   source "#{Chef::Config[:file_cache_path]}/#{package}"
 end
+
 
 service 'sensu-client' do
   action :enable
