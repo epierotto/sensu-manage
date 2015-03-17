@@ -13,6 +13,12 @@ admin_user = "#{node['sensu-manage']['windows']['admin_user']}"
 sensu_dir = "#{node['sensu-manage']['windows']['directory']}"
 data_bags = node['sensu-manage']['checks']['data_bags']
 
+directory "#{sensu_dir}/conf.d" do
+    recursive true
+    action :create
+end
+
+
 data_bags.keys.each do |data_bag|
 
   data_bags[data_bag].keys.each do |item|

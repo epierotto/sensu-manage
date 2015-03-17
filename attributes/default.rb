@@ -11,6 +11,7 @@
 default['sensu-manage']['windows']['admin_user'] = "Administrator"
 default['sensu-manage']['windows']['directory'] = 'C:/etc/sensu'
 default['sensu-manage']['windows']['log_directory'] = 'C:/var/log/sensu'
+default['sensu-manage']['windows']['dism_source'] = nil
 default['sensu-manage']['windows']['plugins']['dir'] = "C:/opt/sensu/plugins"
 default['sensu-manage']['windows']['package']['source'] = "http://repos.sensuapp.org/msi/sensu-0.12.3-1.msi"
 default['sensu-manage']['windows']['package']['checksum'] = "1df8fccb861adea9723f49392a393ab6a557e70c3515f7b45f3faf689f3e2b53"
