@@ -9,7 +9,6 @@
   <executable>C:/opt/sensu/embedded/bin/ruby</executable>
   <argument>C:/opt/sensu/embedded/bin/<%= @service %></argument>
   <argument>-c</argument>
-<<<<<<< HEAD
   <argument><%= @sensu_dir %>/config.json</argument>
   <argument>-d</argument>
   <argument><%= @sensu_dir %>/conf.d</argument>
@@ -17,13 +16,4 @@
   <argument><%= @sensu_dir %>/extensions</argument>
   <argument>-l</argument>
   <argument><%= @sensu_log_dir %>/<%= @service %>.log</argument>
-=======
-  <argument><%= @sensu_dir %>\config.json</argument>
-  <argument>-d</argument>
-  <argument><%= @sensu_dir %>\conf.d</argument>
-  <argument>-e</argument>
-  <argument><%= @sensu_dir %>\extensions</argument>
-  <argument>-l</argument>
-  <argument><%= @sensu_log_dir %>\<%= @service %>.log</argument>
->>>>>>> 79ffc20e407547b6f5babb1233934f5270efd287
 </service>

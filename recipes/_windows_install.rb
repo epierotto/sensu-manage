@@ -20,6 +20,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/#{package}" do
   rights :full_control, admin_user
   action :create
   checksum checksum
+  atomic_update false
 end
 
 if win_version.windows_server_2012? || win_version.windows_server_2012_r2?
