@@ -10,6 +10,7 @@
 
 admin_user = "#{node['sensu-manage']['windows']['admin_user']}"
 plugins_dir = "#{node['sensu-manage']['windows']['plugins']['dir']}"
+gem_binary = 'C:\opt\sensu\embedded\bin\gem.bat'
 
 directory plugins_dir do
   rights :read, admin_user
@@ -31,16 +32,36 @@ data_bags.keys.each do |data_bag|
     
     if bag.key?('plugins')
       plugins = bag['plugins']
-      # Install the needed packages if any
-#      unless plugins['packages'].empty?
-#        packages = plugins['packages']
-#        packages.each do |package|
-#          package package do
-#            action :install
-#          end
-#        end
-#      end
 
+      if plugins.key?('rubygems')
+        # Install the needed gem packages from a designated repo
+        if plugins['rubygems']['repo'].empty?
+          plugins['rubygems']['gems'].each do |gem|
+            
+            gem_package gem do
+              gem_binary gem_binary
+              action :install
+              ignore_failure true
+            end
+
+          end
+
+        else
+
+          plugins['rubygems']['gems'].each do |gem|
+
+            gem_package gem do
+              gem_binary gem_binary
+              source "#{plugins['rubygems']['repo']}"
+              action :install
+              ignore_failure true
+            end
+
+          end
+
+        end
+
+      end
       # Copy the scripts into the plugins directory
       unless plugins['sources'].empty?
         plugins_sources = plugins['sources']
